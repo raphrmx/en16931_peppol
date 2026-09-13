@@ -1,3 +1,9 @@
+## 0.1.1
+
+- The README says what this package does not do, and names the packages that
+  do it: the model and the rules in `en16931`, and the two syntaxes that write
+  the document.
+
 ## 0.1.0
 
 First release.

@@ -87,6 +87,15 @@ the invoice says. Those five belong to a syntax package, and
 The rule catalogue is read from the artefacts OpenPeppol publishes, so it is
 complete by construction. A test fails when a rule has no answer.
 
+## What it does not do
+
+It says whether an invoice is ready for the network, and nothing else. The
+model and the rules of the standard are in
+[en16931](https://pub.dev/packages/en16931), the document is written by
+[en16931_ubl](https://pub.dev/packages/en16931_ubl) or
+[en16931_cii](https://pub.dev/packages/en16931_cii), and sending it over an
+access point is a different problem again.
+
 ## License
 
 MIT.
