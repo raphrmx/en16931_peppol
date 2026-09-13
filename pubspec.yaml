@@ -1,0 +1,31 @@
+name: en16931_peppol
+description: >-
+  The Peppol BIS Billing 3.0 profile of the European electronic invoice: the
+  identifiers it is claimed under, and the rules Peppol adds to EN 16931.
+version: 0.1.0
+homepage: https://www.comapps.be
+repository: https://github.com/raphrmx/en16931_peppol
+issue_tracker: https://github.com/raphrmx/en16931_peppol/issues
+topics:
+  - einvoicing
+  - en16931
+  - peppol
+  - invoice
+  - vat
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  decimal: ^3.0.0
+  en16931: ^0.1.0
+
+dev_dependencies:
+  lint: ^2.10.0
+  test: ^1.31.0
+  xml: ^6.5.0
+
+# The model is developed alongside this package and is not on pub.dev yet.
+dependency_overrides:
+  en16931:
+    path: ../en16931
