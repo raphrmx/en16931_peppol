@@ -16,12 +16,14 @@ void main() {
     seller: const Seller(
       name: 'COMAPPS SRL',
       vatIdentifier: 'BE0123456789',
-      electronicAddress: Identifier('0123456749', scheme: Scheme.belgianEnterprise),
+      electronicAddress:
+          Identifier('0123456749', scheme: Scheme.belgianEnterprise),
       address: Address(city: 'Bruxelles', postalCode: '1000', country: 'BE'),
     ),
     buyer: const Buyer(
       name: 'Client SA',
-      electronicAddress: Identifier('0987654394', scheme: Scheme.belgianEnterprise),
+      electronicAddress:
+          Identifier('0987654394', scheme: Scheme.belgianEnterprise),
       address: Address(city: 'Namur', postalCode: '5000', country: 'BE'),
     ),
     lines: [
