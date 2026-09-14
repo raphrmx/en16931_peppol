@@ -15,9 +15,20 @@ import 'dart:io';
 
 import 'package:xml/xml.dart';
 
+/// The release the artefacts are read from.
+///
+/// A tag rather than a branch, so that generating the catalogue twice gives
+/// the same catalogue twice. Peppol revises its rules twice a year, and
+/// reading from a moving branch leaves the package saying which rules it
+/// covers without being able to say against what.
+///
+/// Raising this is a deliberate act: bump it, regenerate, and read what the
+/// diff says before committing it.
+const String artefactRelease = 'v3.0.20';
+
 const String _base =
     'https://raw.githubusercontent.com/OpenPEPPOL/peppol-bis-invoice-3/'
-    'master/rules/sch';
+    '$artefactRelease/rules/sch';
 
 const Map<String, String> _sources = {
   'artefacts/peppol-ubl.sch': '$_base/PEPPOL-EN16931-UBL.sch',
@@ -145,8 +156,9 @@ Iterable<_Rule> _read(String source) sync* {
     final id = assertion.getAttribute('id');
     if (id == null || !id.startsWith('PEPPOL')) continue;
     if (!seen.add(id)) continue;
-    final severity =
-        assertion.getAttribute('flag') == 'warning' ? 'warning' : 'fatal';
+    final severity = assertion.getAttribute('flag') == 'warning'
+        ? 'warning'
+        : 'fatal';
     yield _Rule(id, severity, _terms(assertion.innerText));
   }
 }

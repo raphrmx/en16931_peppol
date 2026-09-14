@@ -1147,11 +1147,7 @@ const Set<String> peppolMimeTypes = {
 /// A code list Peppol narrows or points at.
 ///
 /// 3 codes.
-const Set<String> peppolPeriodCodes = {
-  '3',
-  '35',
-  '432',
-};
+const Set<String> peppolPeriodCodes = {'3', '35', '432'};
 
 /// A code list Peppol narrows or points at.
 ///

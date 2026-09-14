@@ -2,10 +2,10 @@
 
 # EN 16931 Peppol BIS
 
-[![Build](https://img.shields.io/github/actions/workflow/status/raphrmx/en16931_peppol/ci.yml?branch=main&label=build)](https://github.com/raphrmx/en16931_peppol/actions/workflows/ci.yml)
+![Build](https://img.shields.io/github/actions/workflow/status/raphrmx/en16931_peppol/ci.yml?branch=main&label=build)
 [![Pub Version](https://img.shields.io/pub/v/en16931_peppol?color=blue)](https://pub.dev/packages/en16931_peppol)
 [![Maintainer](https://img.shields.io/badge/Maintainer-Raphael_Vrient-purple)](https://pub.dev/publishers/comapps.be/packages)
-[![License](https://img.shields.io/badge/Licence-MIT-blue)](/LICENSE)
+[![License](https://img.shields.io/badge/Licence-MIT-blue)](https://pub.dev/packages/en16931_peppol/license)
 ![Maintenance](https://img.shields.io/badge/Maintained-yes-success)
 
 Peppol BIS Billing 3.0: the 59 rules the network adds to EN 16931, and the
@@ -18,8 +18,8 @@ so before it is sent.
 
 ```yaml
 dependencies:
-  en16931: ^0.1.0
-  en16931_peppol: ^0.1.0
+  en16931: ^0.1.2
+  en16931_peppol: ^0.1.2
 ```
 
 ## Check an invoice
@@ -93,9 +93,13 @@ It says whether an invoice is ready for the network, and nothing else. The
 model and the rules of the standard are in
 [en16931](https://pub.dev/packages/en16931), the document is written by
 [en16931_ubl](https://pub.dev/packages/en16931_ubl) or
-[en16931_cii](https://pub.dev/packages/en16931_cii), and sending it over an
-access point is a different problem again.
+[en16931_cii](https://pub.dev/packages/en16931_cii). Which access point puts
+it on the network is a separate choice, and does not change the document.
 
 ## License
 
-MIT.
+Released under the [MIT licence](https://pub.dev/packages/en16931_peppol/license).
+
+The rule catalogue is generated from the artefacts OpenPeppol publishes, which
+carry no licence. None of their content is redistributed: what is taken from
+them is which rules exist, how severe each is and which terms it bears on.

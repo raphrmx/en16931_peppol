@@ -21,10 +21,10 @@ Set<String> get implementedPeppolRules => peppolRules.keys.toSet();
 
 /// Every Peppol rule this package has an answer for, whichever the answer is.
 Set<String> get accountedPeppolRules => {
-      ...peppolRules.keys,
-      ...peppolMetByConstruction.keys,
-      ...peppolForTheSyntax.keys,
-    };
+  ...peppolRules.keys,
+  ...peppolMetByConstruction.keys,
+  ...peppolForTheSyntax.keys,
+};
 
 /// What [invoice] breaks, under the standard and under Peppol.
 ///

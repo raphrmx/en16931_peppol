@@ -49,7 +49,8 @@ Invoice _peppol({
     paymentInstructions: paymentInstructions,
     supportingDocuments: supportingDocuments,
     notes: notes,
-    lines: lines ??
+    lines:
+        lines ??
         [
           InvoiceLine.of(
             id: '1',
@@ -184,7 +185,10 @@ void main() {
         vatIdentifier: 'BE0123456789',
         address: Address(country: 'BE'),
       );
-      const buyer = Buyer(name: 'Client SA', address: Address(country: 'BE'));
+      const buyer = Buyer(
+        name: 'Client SA',
+        address: Address(country: 'BE'),
+      );
       final broken = _broken(_peppol(seller: seller, buyer: buyer));
       expect(
         broken,
@@ -275,10 +279,7 @@ void main() {
         vatCategory: VatCategory.standardRate,
         vatRate: _d('21'),
       );
-      expect(
-        _broken(_peppol(lines: [line])),
-        contains('PEPPOL-EN16931-R120'),
-      );
+      expect(_broken(_peppol(lines: [line])), contains('PEPPOL-EN16931-R120'));
     });
 
     test('R121 refuses a base quantity of zero or less', () {
@@ -292,10 +293,7 @@ void main() {
         vatCategory: VatCategory.standardRate,
         vatRate: _d('21'),
       );
-      expect(
-        _broken(_peppol(lines: [line])),
-        contains('PEPPOL-EN16931-R121'),
-      );
+      expect(_broken(_peppol(lines: [line])), contains('PEPPOL-EN16931-R121'));
     });
 
     test('R130 wants the base quantity counted in the line unit', () {
@@ -313,10 +311,7 @@ void main() {
         vatCategory: VatCategory.standardRate,
         vatRate: _d('21'),
       );
-      expect(
-        _broken(_peppol(lines: [line])),
-        contains('PEPPOL-EN16931-R130'),
-      );
+      expect(_broken(_peppol(lines: [line])), contains('PEPPOL-EN16931-R130'));
     });
 
     test('R046 wants the net price to follow from the gross price', () {
@@ -334,10 +329,7 @@ void main() {
         vatCategory: VatCategory.standardRate,
         vatRate: _d('21'),
       );
-      expect(
-        _broken(_peppol(lines: [line])),
-        contains('PEPPOL-EN16931-R046'),
-      );
+      expect(_broken(_peppol(lines: [line])), contains('PEPPOL-EN16931-R046'));
     });
   });
 
@@ -425,10 +417,7 @@ void main() {
         electronicAddress: Identifier('0123456789', scheme: '0208'),
         address: Address(country: 'BE'),
       );
-      expect(
-        _broken(_peppol(seller: seller)),
-        contains('PEPPOL-COMMON-R043'),
-      );
+      expect(_broken(_peppol(seller: seller)), contains('PEPPOL-COMMON-R043'));
     });
 
     test('the checks hold against numbers that are really issued', () {

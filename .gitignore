@@ -19,3 +19,7 @@ artefacts/
 # The Peppol rule artefacts are fetched, never redistributed.
 # `dart run tool/generate_catalogue.dart --fetch` pulls them in.
 artefacts/
+
+# The Peppol example invoices are fetched, never redistributed.
+# `dart run tool/fetch_examples.dart` pulls them in.
+examples_from_peppol/

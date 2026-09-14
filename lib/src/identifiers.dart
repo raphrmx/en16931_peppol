@@ -113,8 +113,9 @@ bool isItalianFiscalCode(String value) =>
 ///
 /// As with the fiscal code, the check digit is left alone on purpose.
 bool isItalianVatCode(String value) {
-  final digits =
-      value.toUpperCase().startsWith('IT') ? value.substring(2) : value;
+  final digits = value.toUpperCase().startsWith('IT')
+      ? value.substring(2)
+      : value;
   return RegExp(r'^[0-9]{11}$').hasMatch(digits);
 }
 
