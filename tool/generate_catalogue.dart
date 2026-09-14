@@ -89,6 +89,16 @@ Future<void> main(List<String> arguments) async {
   final lists = _lists(files['UBL']!.readAsStringSync());
   File(_output).writeAsStringSync(_emit(catalogue, version, lists));
 
+  // The emitted lists run past the column the formatter wraps at, so what is
+  // written and what is committed would differ by a reflow. Formatting here
+  // keeps them the same file, which is what lets the build compare them.
+  final formatted = Process.runSync('dart', ['format', _output]);
+  if (formatted.exitCode != 0) {
+    stderr.writeln('dart format failed: ${formatted.stderr}');
+    exitCode = 1;
+    return;
+  }
+
   final names = lists.keys.toList()..sort();
   for (final name in names) {
     stdout.writeln('  $name: ${lists[name]!.length} codes');
