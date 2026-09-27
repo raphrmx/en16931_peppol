@@ -49,8 +49,7 @@ Invoice _peppol({
     paymentInstructions: paymentInstructions,
     supportingDocuments: supportingDocuments,
     notes: notes,
-    lines:
-        lines ??
+    lines: lines ??
         [
           InvoiceLine.of(
             id: '1',

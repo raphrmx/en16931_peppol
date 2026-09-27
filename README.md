@@ -1,12 +1,11 @@
-<a alt="ComApps Logo" href="https://comapps.be" target="_blank" rel="noreferrer"><img src="https://www.comapps.be/wp-content/uploads/2026/09/CompleteLogoHorizontalMini.png" style="margin: 15px"></a>
-
 # EN 16931 Peppol BIS
 
-![Build](https://img.shields.io/github/actions/workflow/status/raphrmx/en16931_peppol/ci.yml?branch=main&label=build)
-[![Pub Version](https://img.shields.io/pub/v/en16931_peppol?color=blue)](https://pub.dev/packages/en16931_peppol)
-[![Maintainer](https://img.shields.io/badge/Maintainer-Raphael_Vrient-purple)](https://pub.dev/publishers/comapps.be/packages)
-[![License](https://img.shields.io/badge/Licence-MIT-blue)](https://pub.dev/packages/en16931_peppol/license)
-![Maintenance](https://img.shields.io/badge/Maintained-yes-success)
+[![Live demo](https://img.shields.io/badge/Live_demo-comapps.web.app-3c9a70)](https://comapps.web.app/en16931/)
+[![Pub Version](https://img.shields.io/pub/v/en16931_peppol?color=0175C2)](https://pub.dev/packages/en16931_peppol)
+[![Build](https://img.shields.io/github/actions/workflow/status/raphrmx/en16931_peppol/ci.yml?branch=main&label=build)](https://github.com/raphrmx/en16931_peppol/actions/workflows/ci.yml)
+![Maintainer](https://img.shields.io/badge/Maintainer-Raphael_Vrient-733d90)
+[![Licence](https://img.shields.io/badge/Licence-MIT-8C6A3F)](LICENSE)
+![Platforms](https://img.shields.io/badge/Platforms-Android,_iOS,_macOS,_Windows,_Linux,_Web-22375C.svg)
 
 Peppol BIS Billing 3.0: the 59 rules the network adds to EN 16931, and the
 identifiers an invoice is claimed under.

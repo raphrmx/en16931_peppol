@@ -5,8 +5,8 @@ import 'package:en16931_peppol/src/identifiers.dart';
 import 'package:en16931_peppol/src/profile.dart';
 
 /// Checks one Peppol rule against an invoice.
-typedef PeppolCheck =
-    Iterable<RuleViolation> Function(Invoice invoice, RuleDescriptor rule);
+typedef PeppolCheck = Iterable<RuleViolation> Function(
+    Invoice invoice, RuleDescriptor rule);
 
 /// The type codes the billing process accepts on an invoice.
 const Set<String> _invoiceTypes = {
@@ -148,13 +148,13 @@ const Map<String, String> peppolForTheSyntax = {
   'PEPPOL-EN16931-R008': 'No element may be written empty.',
   'PEPPOL-EN16931-R051':
       'Every currencyID is the invoice currency, save the one in the '
-      'accounting currency.',
+          'accounting currency.',
   'PEPPOL-EN16931-R053': 'One TaxTotal carries the subtotals, and only one.',
   'PEPPOL-EN16931-R054':
       'One TaxTotal carries the accounting currency, and only one.',
   'PEPPOL-EN16931-R101':
       'A document reference on a line is the invoiced object and nothing '
-      'else.',
+          'else.',
 };
 
 // --- What the profile is claimed as ----------------------------------------
