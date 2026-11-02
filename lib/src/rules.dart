@@ -45,7 +45,10 @@ const Set<String> _creditNoteTypes = {'381', '396', '81', '83', '532'};
 const Set<String> _creditNoteDocuments = {'381', '396', '532'};
 
 /// The type codes only a German invoice may use.
-const Set<String> _germanOnlyTypes = {'326', '384'};
+const Set<String> _germanOnlyTypes = {'326', '384', '389'};
+
+/// The processes whose type codes P0100 and P0101 narrow.
+const Set<String> _typedProcesses = {'01', '02'};
 
 /// Which VAT category a VATEX exemption reason code commits the breakdown to.
 const Map<String, (String rule, VatCategory category)> _vatexCategories = {
@@ -73,6 +76,10 @@ const Map<String, String> _identifierSchemes = {
   'PEPPOL-COMMON-R050': '0151',
   'PEPPOL-COMMON-R052': '0096',
   'PEPPOL-COMMON-R053': '0198',
+  'PEPPOL-COMMON-R054': '0106',
+  'PEPPOL-COMMON-R055': '0190',
+  'PEPPOL-COMMON-R056-1': '9944',
+  'PEPPOL-COMMON-R057': '0217',
 };
 
 /// What the profile calls each national scheme, for the message.
@@ -89,6 +96,10 @@ const Map<String, String> _schemeNames = {
   '0151': 'Australian Business Number',
   '0096': 'Danish production unit number',
   '0198': 'Danish CVR number',
+  '0106': 'Dutch Chamber of Commerce number',
+  '0190': 'Dutch organisation identification number',
+  '9944': 'Dutch VAT number',
+  '0217': 'Dutch Chamber of Commerce establishment number',
 };
 
 /// The rules Peppol adds that this package checks.
@@ -121,6 +132,7 @@ final Map<String, PeppolCheck> peppolRules = {
   'PEPPOL-EN16931-CL006': _cl006,
   'PEPPOL-EN16931-CL007': _cl007,
   'PEPPOL-EN16931-CL008': _cl008,
+  'PEPPOL-COMMON-R056-2': _r0562,
   for (final entry in _vatexCategories.entries)
     entry.value.$1: (invoice, rule) =>
         _vatex(invoice, rule, entry.key, entry.value.$2),
@@ -169,21 +181,23 @@ Iterable<RuleViolation> _r001(Invoice invoice, RuleDescriptor rule) sync* {
   }
 }
 
+/// Peppol approves a closed list of processes, peppolBusinessProcesses.
+///
+/// The two French processes are listed by the UBL artefacts only. They are
+/// accepted here whatever the syntax, since the model does not know which one
+/// the invoice will be written in, and refusing a correct invoice costs more
+/// than letting a CII one through that its own validator will stop.
 Iterable<RuleViolation> _r007(Invoice invoice, RuleDescriptor rule) sync* {
   final process = invoice.businessProcess;
   if (_blank(process)) return;
-  if (!_processFormat.hasMatch(process!)) {
-    yield _at(
-      rule,
-      'The business process (BT-23) is "$process", where Peppol expects '
-      'urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0.',
-    );
-  }
+  if (_process(invoice) != null) return;
+  yield _at(
+    rule,
+    'The business process (BT-23) is "$process", which is not one Peppol '
+    'approves. Billing is $peppolBillingProcess, and billing with response '
+    'is $peppolBillingWithResponseProcess.',
+  );
 }
-
-final RegExp _processFormat = RegExp(
-  '^urn:fdc:peppol.eu:2017:poacc:billing:[0-9]{2}:1.0\$',
-);
 
 Iterable<RuleViolation> _r004(Invoice invoice, RuleDescriptor rule) sync* {
   if (invoice.specificationIdentifier != peppolSpecification) {
@@ -196,14 +210,11 @@ Iterable<RuleViolation> _r004(Invoice invoice, RuleDescriptor rule) sync* {
   }
 }
 
-/// The billing process number, or null when the invoice is under another one.
-String? _billingProcess(Invoice invoice) {
+/// The process number Peppol reads BT-23 as, or null when it approves none.
+String? _process(Invoice invoice) {
   final process = invoice.businessProcess;
   if (process == null) return null;
-  final match = RegExp(
-    '^urn:fdc:peppol.eu:2017:poacc:billing:([0-9]{2}):1.0\$',
-  ).firstMatch(process);
-  return match?.group(1);
+  return peppolBusinessProcesses[process.trim()];
 }
 
 // --- What an invoice has to carry ------------------------------------------
@@ -546,7 +557,7 @@ Iterable<RuleViolation> _cl008(Invoice invoice, RuleDescriptor rule) sync* {
 // --- Type codes and VAT categories -----------------------------------------
 
 Iterable<RuleViolation> _p0100(Invoice invoice, RuleDescriptor rule) sync* {
-  if (_billingProcess(invoice) != '01') return;
+  if (!_typedProcesses.contains(_process(invoice))) return;
   final code = invoice.typeCode.value;
   if (_creditNoteDocuments.contains(code)) return;
   if (_invoiceTypes.contains(code)) return;
@@ -558,7 +569,7 @@ Iterable<RuleViolation> _p0100(Invoice invoice, RuleDescriptor rule) sync* {
 }
 
 Iterable<RuleViolation> _p0101(Invoice invoice, RuleDescriptor rule) sync* {
-  if (_billingProcess(invoice) != '01') return;
+  if (!_typedProcesses.contains(_process(invoice))) return;
   final code = invoice.typeCode.value;
   if (!_creditNoteDocuments.contains(code)) return;
   if (_creditNoteTypes.contains(code)) return;
@@ -569,15 +580,25 @@ Iterable<RuleViolation> _p0101(Invoice invoice, RuleDescriptor rule) sync* {
   );
 }
 
+/// 326, 384 and 389 are kept for invoices between German parties, which the
+/// rule reads from the postal addresses. A corrected invoice, 384, is also
+/// allowed between Slovak parties, which the rule reads the way the artefacts
+/// read a country: from the VAT identifier first.
 Iterable<RuleViolation> _p0112(Invoice invoice, RuleDescriptor rule) sync* {
-  if (!_germanOnlyTypes.contains(invoice.typeCode.value)) return;
+  final code = invoice.typeCode.value;
+  if (!_germanOnlyTypes.contains(code)) return;
   if (_isGerman(invoice.seller.address) && _isGerman(invoice.buyer.address)) {
+    return;
+  }
+  if (code == '384' &&
+      _supplierCountry(invoice) == 'SK' &&
+      _customerCountry(invoice) == 'SK') {
     return;
   }
   yield _at(
     rule,
     'The type code ${invoice.typeCode} is allowed only when both parties are '
-    'German.',
+    'German, or, for 384, both Slovak.',
   );
 }
 
@@ -620,6 +641,26 @@ Iterable<RuleViolation> _identifiers(
   }
 }
 
+/// A VAT identifier starting with NL is shaped NL, nine digits, B and two
+/// digits, wherever it is given.
+Iterable<RuleViolation> _r0562(Invoice invoice, RuleDescriptor rule) sync* {
+  final identifiers = {
+    'seller (BT-31)': invoice.seller.vatIdentifier,
+    'buyer (BT-48)': invoice.buyer.vatIdentifier,
+    'tax representative (BT-63)': invoice.taxRepresentative?.vatIdentifier,
+  };
+  for (final entry in identifiers.entries) {
+    final value = entry.value?.trim();
+    if (value == null || !value.startsWith('NL')) continue;
+    if (isDutchVat(value)) continue;
+    yield _at(
+      rule,
+      'The VAT identifier of the ${entry.key} is "$value", where a Dutch one '
+      'is shaped NL123456789B12.',
+    );
+  }
+}
+
 /// Every identifier an invoice carries that a national rule bears on.
 ///
 /// The delivery location (BT-71) is not one of them, although it carries a
@@ -650,6 +691,30 @@ Iterable<(Identifier, String)> _identifiersOf(Invoice invoice) sync* {
 bool _blank(String? value) => value == null || value.trim().isEmpty;
 
 bool _isGerman(Address address) => address.country == 'DE';
+
+/// The seller's country as the artefacts read it: the prefix of its VAT
+/// identifier, else that of the tax representative, else its postal address.
+String _supplierCountry(Invoice invoice) =>
+    _vatCountry(invoice.seller.vatIdentifier) ??
+    _vatCountry(invoice.taxRepresentative?.vatIdentifier) ??
+    _addressCountry(invoice.seller.address);
+
+/// The buyer's country as the artefacts read it: the prefix of its VAT
+/// identifier, else its postal address.
+String _customerCountry(Invoice invoice) =>
+    _vatCountry(invoice.buyer.vatIdentifier) ??
+    _addressCountry(invoice.buyer.address);
+
+String? _vatCountry(String? identifier) {
+  final value = identifier?.trim();
+  if (value == null || value.length < 2) return null;
+  return value.substring(0, 2).toUpperCase();
+}
+
+String _addressCountry(Address address) {
+  final country = address.country.trim();
+  return country.isEmpty ? 'XX' : country.toUpperCase();
+}
 
 String _noun(AllowanceOrCharge kind) =>
     kind == AllowanceOrCharge.allowance ? 'allowance' : 'charge';

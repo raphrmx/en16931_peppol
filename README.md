@@ -8,7 +8,7 @@
 ![Platforms](https://img.shields.io/badge/Platforms-Android,_iOS,_macOS,_Windows,_Linux,_Web-22375C.svg)
 [![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-00457C?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=ZN6D382YQAV5N)
 
-Peppol BIS Billing 3.0: the 59 rules the network adds to EN 16931, and the
+Peppol BIS Billing 3.0: the 64 rules the network adds to EN 16931, and the
 identifiers an invoice is claimed under.
 
 An invoice can satisfy the standard and still be refused by Peppol. This says
@@ -79,7 +79,7 @@ isBelgianEnterprise('0123456789'); // false
 
 ## Worth knowing up front
 
-Of the 59 rules, 48 are checked here, 6 cannot be broken by an invoice built
+Of the 64 rules, 53 are checked here, 6 cannot be broken by an invoice built
 with this model, and 5 are about how the XML is put together rather than what
 the invoice says. Those five belong to a syntax package, and
 `peppolForTheSyntax` names them with what they ask.

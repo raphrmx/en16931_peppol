@@ -24,6 +24,10 @@ const Map<String, bool Function(String)> _checks = {
   '9907': isItalianFiscalCode,
   '0211': isItalianVatCode,
   '9906': isItalianVatCode,
+  '0106': isDutchChamberOfCommerce,
+  '0190': isDutchOrganisation,
+  '9944': isDutchVat,
+  '0217': isDutchEstablishment,
 };
 
 /// A GLN, which is digits closed by the GS1 check digit.
@@ -117,6 +121,22 @@ bool isItalianVatCode(String value) {
       value.toUpperCase().startsWith('IT') ? value.substring(2) : value;
   return RegExp(r'^[0-9]{11}$').hasMatch(digits);
 }
+
+/// A Dutch Chamber of Commerce (KVK) number, which is eight digits.
+bool isDutchChamberOfCommerce(String value) =>
+    value.length == 8 && _digitsOnly(value);
+
+/// A Dutch organisation identification number (OIN), which is twenty digits.
+bool isDutchOrganisation(String value) =>
+    value.length == 20 && _digitsOnly(value);
+
+/// A Dutch VAT number: NL, nine digits, B and two digits.
+bool isDutchVat(String value) =>
+    RegExp(r'^NL[0-9]{9}B[0-9]{2}$').hasMatch(value);
+
+/// A Dutch Chamber of Commerce establishment number, which is twelve digits.
+bool isDutchEstablishment(String value) =>
+    value.length == 12 && _digitsOnly(value);
 
 bool _digitsOnly(String value) => RegExp(r'^[0-9]+$').hasMatch(value);
 

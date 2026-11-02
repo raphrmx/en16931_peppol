@@ -94,7 +94,7 @@ void main() {
   group('coverage', () {
     test('every Peppol rule has an answer', () {
       final catalogue = peppolCatalogue.map((rule) => rule.id).toSet();
-      expect(catalogue, hasLength(59));
+      expect(catalogue, hasLength(64));
       expect(
         catalogue.difference(accountedPeppolRules),
         isEmpty,
@@ -167,6 +167,26 @@ void main() {
       final broken = _broken(_peppol(businessProcess: 'billing'));
       expect(broken, contains('PEPPOL-EN16931-R007'));
       expect(broken, isNot(contains('PEPPOL-EN16931-R001')));
+    });
+
+    test('R007 takes every process Peppol approves', () {
+      for (final process in peppolBusinessProcesses.keys) {
+        expect(
+          _broken(_peppol(businessProcess: process)),
+          isNot(contains('PEPPOL-EN16931-R007')),
+          reason: process,
+        );
+      }
+    });
+
+    test('R007 no longer takes any billing process number', () {
+      expect(
+        _broken(
+          _peppol(
+              businessProcess: 'urn:fdc:peppol.eu:2017:poacc:billing:05:1.0'),
+        ),
+        contains('PEPPOL-EN16931-R007'),
+      );
     });
   });
 
@@ -382,9 +402,59 @@ void main() {
       );
     });
 
-    test('P0112 keeps 326 and 384 for German invoices', () {
+    test('P0100 narrows billing with response as it does billing', () {
       expect(
-        _broken(_peppol(typeCode: const InvoiceTypeCode('326'))),
+        _broken(
+          _peppol(
+            businessProcess: peppolBillingWithResponseProcess,
+            typeCode: const InvoiceTypeCode('999'),
+          ),
+        ),
+        contains('PEPPOL-EN16931-P0100'),
+      );
+    });
+
+    test('P0112 keeps 326, 384 and 389 for German invoices', () {
+      for (final code in ['326', '384', '389']) {
+        expect(
+          _broken(_peppol(typeCode: InvoiceTypeCode(code))),
+          contains('PEPPOL-EN16931-P0112'),
+          reason: code,
+        );
+      }
+    });
+
+    test('P0112 lets a corrected invoice go between Slovak parties', () {
+      const seller = Seller(
+        name: 'Dodavatel s.r.o.',
+        vatIdentifier: 'SK2020123456',
+        electronicAddress: Identifier('0123456749', scheme: '0208'),
+        address: Address(country: 'SK'),
+      );
+      const buyer = Buyer(
+        name: 'Odberatel a.s.',
+        vatIdentifier: 'SK2020654321',
+        electronicAddress: Identifier('0987654394', scheme: '0208'),
+        address: Address(country: 'SK'),
+      );
+      expect(
+        _broken(
+          _peppol(
+            seller: seller,
+            buyer: buyer,
+            typeCode: InvoiceTypeCode.correctedInvoice,
+          ),
+        ),
+        isNot(contains('PEPPOL-EN16931-P0112')),
+      );
+      expect(
+        _broken(
+          _peppol(
+            seller: seller,
+            buyer: buyer,
+            typeCode: const InvoiceTypeCode('326'),
+          ),
+        ),
         contains('PEPPOL-EN16931-P0112'),
       );
     });
@@ -432,6 +502,46 @@ void main() {
       expect(isNorwegianOrganisation('974760674'), isFalse);
       expect(isGln('7300010000002'), isFalse);
       expect(isDanishCvr('12345678'), isFalse);
+    });
+
+    test('the Dutch identifiers are shaped as the Netherlands shape them', () {
+      expect(isDutchChamberOfCommerce('12345678'), isTrue);
+      expect(isDutchChamberOfCommerce('1234567'), isFalse);
+      expect(isDutchOrganisation('12345678901234567890'), isTrue);
+      expect(isDutchOrganisation('1234567890123456789'), isFalse);
+      expect(isDutchVat('NL123456789B12'), isTrue);
+      expect(isDutchVat('NL123456789'), isFalse);
+      expect(isDutchEstablishment('123456789012'), isTrue);
+      expect(isDutchEstablishment('12345678901'), isFalse);
+    });
+
+    test('R054 reads a Dutch Chamber of Commerce number', () {
+      const buyer = Buyer(
+        name: 'Klant BV',
+        electronicAddress: Identifier('1234567', scheme: '0106'),
+        address: Address(country: 'NL'),
+      );
+      expect(_broken(_peppol(buyer: buyer)), contains('PEPPOL-COMMON-R054'));
+    });
+
+    test('R056-2 reads a Dutch VAT identifier, whatever its scheme', () {
+      const buyer = Buyer(
+        name: 'Klant BV',
+        vatIdentifier: 'NL123456789',
+        electronicAddress: Identifier('0987654394', scheme: '0208'),
+        address: Address(country: 'NL'),
+      );
+      expect(_broken(_peppol(buyer: buyer)), contains('PEPPOL-COMMON-R056-2'));
+      const valid = Buyer(
+        name: 'Klant BV',
+        vatIdentifier: 'NL123456789B01',
+        electronicAddress: Identifier('0987654394', scheme: '0208'),
+        address: Address(country: 'NL'),
+      );
+      expect(
+        _broken(_peppol(buyer: valid)),
+        isNot(contains('PEPPOL-COMMON-R056-2')),
+      );
     });
 
     test('a scheme no rule claims is left alone', () {

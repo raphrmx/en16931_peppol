@@ -1,3 +1,28 @@
+## 0.2.0
+
+- The rules follow release 3.0.21 of Peppol BIS Billing, mandatory since
+  17 August 2026, instead of 3.0.20. The catalogue holds 64 rules, of which
+  53 are checked here.
+- PEPPOL-EN16931-R007 takes a closed list of business processes (BT-23),
+  `peppolBusinessProcesses`: billing, billing with response, and the two
+  temporary French processes. Any other
+  `urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0` than 01 is now refused, as
+  Peppol refuses it. This is the breaking change of the release.
+- `peppolBillingWithResponseProcess`, `peppolFranceRegulatedProcess` and
+  `peppolFranceNonRegulatedProcess` carry the new identifiers. P0100 and P0101
+  narrow the type codes under billing with response as they do under billing.
+- P0112 keeps 389 for German invoices too, and lets a corrected invoice, 384,
+  go between Slovak parties.
+- The Dutch identifiers are checked: PEPPOL-COMMON-R054 (0106), R055 (0190),
+  R056-1 (9944), R056-2 (a VAT identifier starting with NL) and R057 (0217),
+  all warnings for now. `isDutchChamberOfCommerce`, `isDutchOrganisation`,
+  `isDutchVat` and `isDutchEstablishment` are exported.
+- PEPPOL-COMMON-R052 and R053, on the Danish identifiers, are rejections
+  rather than warnings, and the code lists follow the release: 14 electronic
+  address schemes and the ANG, BGN and STD currencies are gone, XCG and STN
+  are added.
+- The release in the catalogue header no longer ends on a stray full stop.
+
 ## 0.1.5
 
 - `homepage` and the Live demo badge point at packages.comapps.be, where the

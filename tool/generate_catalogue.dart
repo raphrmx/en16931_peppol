@@ -24,7 +24,7 @@ import 'package:xml/xml.dart';
 ///
 /// Raising this is a deliberate act: bump it, regenerate, and read what the
 /// diff says before committing it.
-const String artefactRelease = 'v3.0.20';
+const String artefactRelease = '3.0.21';
 
 const String _base =
     'https://raw.githubusercontent.com/OpenPEPPOL/peppol-bis-invoice-3/'
@@ -150,7 +150,7 @@ Future<void> _fetch(String url, String target) async {
 /// The release the artefacts announce in their leading comment.
 String? _version(String source) {
   final match = RegExp(
-    r'Last update:\s*(\d{4}) (\w+) release ([0-9.]+)',
+    r'Last update:\s*(\d{4}) (\w+) release ([0-9]+(?:\.[0-9]+)*)',
   ).firstMatch(source);
   if (match == null) return null;
   return '${match.group(3)}, ${match.group(2)} ${match.group(1)}';
